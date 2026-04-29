@@ -1,0 +1,1485 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Publications - Luca Brayda</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      background: #f8f9fa;
+    }
+
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 40px 20px;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 50px;
+      padding-bottom: 30px;
+      border-bottom: 2px solid #e0e0e0;
+    }
+
+    header h1 {
+      font-size: 2.5em;
+      margin-bottom: 10px;
+      color: #1a1a1a;
+    }
+
+    header p {
+      font-size: 1.1em;
+      color: #666;
+    }
+
+    /* Keyword Filter Styles */
+    .keyword-filter-section {
+      margin-bottom: 40px;
+      padding: 25px;
+      background: white;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+
+    .keyword-filter-section h2 {
+      font-size: 1.2em;
+      margin-bottom: 20px;
+      color: #333;
+      font-weight: 600;
+    }
+
+    .keyword-filter-buttons {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .keyword-filter-btn {
+      padding: 10px 14px;
+      border: 2px solid #ddd;
+      border-radius: 6px;
+      font-size: 0.95em;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      font-weight: 500;
+      background: white;
+      color: #333;
+      position: relative;
+    }
+
+    .keyword-filter-btn:hover {
+      border-color: var(--keyword-color);
+      box-shadow: 0 0 0 3px rgba(0,0,0,0.05);
+    }
+
+    .keyword-filter-btn.active {
+      background: var(--keyword-color);
+      border-color: var(--keyword-color);
+      color: white;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      font-weight: 600;
+    }
+
+    .keyword-filter-btn .count {
+      opacity: 0.8;
+      margin-left: 4px;
+    }
+
+    .keyword-filter-btn.active .count {
+      opacity: 1;
+    }
+
+    .keyword-filter-btn.clear {
+      margin-left: auto;
+      background: #f0f0f0;
+      border-color: #ddd;
+      color: #666;
+    }
+
+    .keyword-filter-btn.clear:hover {
+      border-color: #999;
+      background: #e8e8e8;
+    }
+
+    .keyword-filter-btn.clear.active {
+      background: #666;
+      border-color: #666;
+      color: white;
+      margin-left: auto;
+    }
+
+    .filter-status {
+      margin-top: 15px;
+      padding: 10px 12px;
+      background: #f0f7ff;
+      border-left: 4px solid #3498DB;
+      font-size: 0.95em;
+      color: #2c3e50;
+      border-radius: 4px;
+      display: none;
+    }
+
+    .filter-status.visible {
+      display: block;
+    }
+
+    .section {
+      margin-bottom: 60px;
+      display: none;
+    }
+
+    .section.visible {
+      display: block;
+    }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      margin-bottom: 30px;
+      border-bottom: 2px solid #007bff;
+      padding-bottom: 15px;
+    }
+
+    .section-header.patents {
+      border-bottom-color: #e8a537;
+    }
+
+    .section-header.patents h2 {
+      color: #e8a537;
+    }
+
+    .section-header.chapters {
+      border-bottom-color: #9b59b6;
+    }
+
+    .section-header.chapters h2 {
+      color: #9b59b6;
+    }
+
+    .section-header.conferences {
+      border-bottom-color: #28a745;
+    }
+
+    .section-header.conferences h2 {
+      color: #28a745;
+    }
+
+    .section-header.datasets {
+      border-bottom-color: #17a2b8;
+    }
+
+    .section-header.datasets h2 {
+      color: #17a2b8;
+    }
+
+    .section-icon {
+      width: 40px;
+      height: 40px;
+      margin-right: 15px;
+      flex-shrink: 0;
+    }
+
+    .section-header h2 {
+      font-size: 1.8em;
+      color: #007bff;
+      margin: 0;
+    }
+
+    .pub-count {
+      margin-left: auto;
+      font-size: 0.9em;
+      color: #999;
+      background: #f0f0f0;
+      padding: 5px 10px;
+      border-radius: 20px;
+    }
+
+    .publications-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 20px;
+    }
+
+    .publication-item {
+      background: white;
+      border-left: 4px solid #007bff;
+      padding: 20px;
+      border-radius: 4px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+      transition: box-shadow 0.2s, transform 0.2s, opacity 0.2s;
+    }
+
+    .publication-item.hidden {
+      display: none;
+    }
+
+    .section-header.patents ~ .publications-list .publication-item {
+      border-left-color: #e8a537;
+    }
+
+    .section-header.chapters ~ .publications-list .publication-item {
+      border-left-color: #9b59b6;
+    }
+
+    .section-header.conferences ~ .publications-list .publication-item {
+      border-left-color: #28a745;
+    }
+
+    .section-header.datasets ~ .publications-list .publication-item {
+      border-left-color: #17a2b8;
+    }
+
+    .publication-item:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transform: translateY(-2px);
+    }
+
+    .pub-header h3 {
+      font-size: 1.1em;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      color: #1a1a1a;
+    }
+
+    .pub-meta {
+      font-size: 0.9em;
+      color: #666;
+      font-style: italic;
+      margin: 8px 0;
+    }
+
+    .pub-details {
+      margin-top: 12px;
+      padding-top: 12px;
+      border-top: 1px solid #eee;
+    }
+
+    .pub-venue {
+      font-size: 0.85em;
+      color: #007bff;
+      font-weight: 500;
+      margin: 5px 0;
+    }
+
+    .pub-year {
+      font-size: 0.8em;
+      color: #999;
+      margin: 5px 0;
+    }
+
+    .pub-patent {
+      font-size: 0.8em;
+      color: #e8a537;
+      font-weight: 600;
+      margin: 5px 0;
+    }
+
+    /* Keyword Container Styles */
+    .keyword-container {
+      margin-top: 8px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
+    .keyword-tag {
+      display: inline-block;
+      padding: 4px 9px;
+      border-radius: 4px;
+      font-size: 0.75em;
+      color: white;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .keyword-tag:hover {
+      opacity: 0.8;
+      transform: scale(1.05);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.15);
+    }
+
+    .pub-link {
+      display: inline-block;
+      margin-top: 8px;
+      color: #007bff;
+      text-decoration: none;
+      font-size: 0.85em;
+      font-weight: 500;
+      padding: 4px 8px;
+      border: 1px solid #e0e0e0;
+      border-radius: 3px;
+      transition: all 0.2s;
+    }
+
+    .pub-link:hover {
+      background: #007bff;
+      color: white;
+      border-color: #007bff;
+    }
+
+    footer {
+      margin-top: 60px;
+      padding-top: 30px;
+      border-top: 2px solid #e0e0e0;
+      text-align: center;
+      color: #999;
+      font-size: 0.9em;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        padding: 20px 15px;
+      }
+
+      header h1 {
+        font-size: 1.8em;
+      }
+
+      .keyword-filter-buttons {
+        gap: 10px;
+      }
+
+      .keyword-filter-btn {
+        padding: 8px 12px;
+        font-size: 0.9em;
+        flex: 1 1 calc(50% - 5px);
+      }
+
+      .keyword-filter-btn.clear {
+        flex: 1 1 100%;
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .section-header {
+        flex-wrap: wrap;
+      }
+
+      .pub-count {
+        width: 100%;
+        margin-left: 0;
+        margin-top: 10px;
+      }
+
+      .publications-list {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Publications</h1>
+      <p>Luca Brayda</p>
+      <p style="font-size: 0.95em; margin-top: 10px;">Total: 69 publications</p>
+    </header>
+
+    <!-- Keyword Filter -->
+    <div class="keyword-filter-section">
+      <h2>🔍 Filter by Research Area</h2>
+      <div class="keyword-filter-buttons">
+        <button class="keyword-filter-btn" data-keyword="Haptics & Tactile" style="--keyword-color: #FF6B6B;">Haptics & Tactile <span class="count">(36)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Cognitive Mapping" style="--keyword-color: #4ECDC4;">Cognitive Mapping <span class="count">(27)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Virtual Reality & 3D" style="--keyword-color: #9B59B6;">Virtual Reality & 3D <span class="count">(19)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Speech & Audio" style="--keyword-color: #F39C12;">Speech & Audio <span class="count">(14)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Brain & Neuroscience" style="--keyword-color: #E74C3C;">Brain & Neuroscience <span class="count">(16)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Super Sensing" style="--keyword-color: #FF1493;">Super Sensing <span class="count">(17)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Signal Processing" style="--keyword-color: #3498DB;">Signal Processing <span class="count">(14)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Robotics & Teleoperation" style="--keyword-color: #27AE60;">Robotics & Teleoperation <span class="count">(11)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Assistive Technology" style="--keyword-color: #16A085;">Assistive Technology <span class="count">(18)</span></button>
+    <button class="keyword-filter-btn" data-keyword="Human-Computer Interaction" style="--keyword-color: #E67E22;">Human-Computer Interaction <span class="count">(13)</span></button>
+    <button class="keyword-filter-btn clear" id="clear-btn" onclick="clearFilters()">✕ Clear</button>
+      </div>
+      <div class="filter-status" id="filter-status"></div>
+    </div>
+
+    <!-- Patents -->
+    <section class="section patents-section visible" data-section="patents">
+      <div class="section-header patents">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/>
+          <polyline points="13 2 13 9 20 9"/>
+          <path d="M12 11v4M9 14h6"/>
+        </svg>
+        <h2>Patents</h2>
+        <div class="pub-count"><span class="count">4</span> patents</div>
+      </div>
+      <div class="publications-list">
+    <div class="publication-item" data-title="Method for reproducing an audio signal">
+      <div class="pub-header">
+        <h3>Method for reproducing an audio signal</h3>
+        <p class="pub-meta">Brayda, L., Giuliani, L., Traverso, F.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">patent</p>
+        <p class="pub-year">2021</p>
+        <p class="pub-patent">IT202000029336A1 / WO2022118192A1</p>
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://patents.google.com/patent/WO2022118192A1" target="_blank" class="pub-link">Patent: IT202000029336A1 / WO2022118192A1</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Bi-stable actuator based on electromagnetic attraction">
+      <div class="pub-header">
+        <h3>Bi-stable actuator based on electromagnetic attraction</h3>
+        <p class="pub-meta">Bertora, F., Brayda, L., Sandini, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">patent</p>
+        <p class="pub-year">2021</p>
+        <p class="pub-patent">US11139098B2</p>
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://patents.google.com/patent/US11139098B2" target="_blank" class="pub-link">Patent: US11139098B2</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="A haptic interface system for providing a haptic stimulus indicative of a virtual relief">
+      <div class="pub-header">
+        <h3>A haptic interface system for providing a haptic stimulus indicative of a virtual relief</h3>
+        <p class="pub-meta">Brayda, L., Torazza, D., Zini, G., Sandini, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">patent</p>
+        <p class="pub-year">2017</p>
+        <p class="pub-patent">EP3152638B1</p>
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://patents.google.com/patent/EP3152638B1" target="_blank" class="pub-link">Patent: EP3152638B1</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Interactive personalized robot for home use">
+      <div class="pub-header">
+        <h3>Interactive personalized robot for home use</h3>
+        <p class="pub-meta">Miro, X. A., Kuhn, R., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">patent</p>
+        <p class="pub-year">2008</p>
+        <p class="pub-patent">US7349758B2</p>
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://patents.google.com/patent/US7349758B2" target="_blank" class="pub-link">Patent: US7349758B2</a>
+      </div>
+    </div>
+      </div>
+    </section>
+
+    <!-- Journal Articles -->
+    <section class="section journals-section visible" data-section="journals">
+      <div class="section-header">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5v13a2.5 2.5 0 0 0 2.5 2.5H20M7 7h10M7 11h10M7 15h5"/>
+        </svg>
+        <h2>Journal Articles</h2>
+        <div class="pub-count"><span class="count">30</span> articles</div>
+      </div>
+      <div class="publications-list">
+    <div class="publication-item" data-title="Blind people can actively manipulate virtual objects with a novel tactile device">
+      <div class="pub-header">
+        <h3>Blind people can actively manipulate virtual objects with a novel tactile device</h3>
+        <p class="pub-meta">Mariacarla Memeo, Giulio Sandini, Elena Cocchi, Luca Brayda</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Scientific Reports</p>
+        <p class="pub-year">2023</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1038/s41598-023-49507-1" target="_blank" class="pub-link">DOI: 10.1038/s41598-023-49507-1</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Combined spatial and frequency encoding for electrotactile feedback of myoelectric signals">
+      <div class="pub-header">
+        <h3>Combined spatial and frequency encoding for electrotactile feedback of myoelectric signals</h3>
+        <p class="pub-meta">Sara Nataletti, Fabrizio Leo, Jakob Dideriksen, Luca Brayda, Strahinja Dosen</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Experimental Brain Research</p>
+        <p class="pub-year">2022</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span></div>
+        <a href="https://doi.org/10.1007/s00221-022-06409-4" target="_blank" class="pub-link">DOI: 10.1007/s00221-022-06409-4</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Enabling visually impaired people to learn three-dimensional tactile graphics with a 3DOF haptic mouse">
+      <div class="pub-header">
+        <h3>Enabling visually impaired people to learn three-dimensional tactile graphics with a 3DOF haptic mouse</h3>
+        <p class="pub-meta">Mariacarla Memeo, Marco Jacono, Giulio Sandini, Luca Brayda</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Journal of NeuroEngineering and Rehabilitation</p>
+        <p class="pub-year">2021</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1186/s12984-021-00935-y" target="_blank" class="pub-link">DOI: 10.1186/s12984-021-00935-y</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Non-informative vision improves spatial tactile discrimination on the shoulder but does not influence detection sensitivity">
+      <div class="pub-header">
+        <h3>Non-informative vision improves spatial tactile discrimination on the shoulder but does not influence detection sensitivity</h3>
+        <p class="pub-meta">Leo, F., Nataletti, S., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Experimental Brain Research</p>
+        <p class="pub-year">2020</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1007/s00221-020-05944-2" target="_blank" class="pub-link">DOI: 10.1007/s00221-020-05944-2</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Temporal Asynchrony but Not Total Energy Nor Duration Improves the Judgment of Numerosity in Electrotactile Stimulation">
+      <div class="pub-header">
+        <h3>Temporal Asynchrony but Not Total Energy Nor Duration Improves the Judgment of Numerosity in Electrotactile Stimulation</h3>
+        <p class="pub-meta">Nataletti, S., Leo, F., Seminara, L., Trompetto, C., Valle, M., Dosen, S., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Frontiers in Bioengineering and Biotechnology</p>
+        <p class="pub-year">2020</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.3389/fbioe.2020.00555" target="_blank" class="pub-link">DOI: 10.3389/fbioe.2020.00555</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Enhancing general spatial skills of young visually impaired people with a programmable distance discrimination training: A case control study">
+      <div class="pub-header">
+        <h3>Enhancing general spatial skills of young visually impaired people with a programmable distance discrimination training: A case control study</h3>
+        <p class="pub-meta">Leo, F., Ferrari, E., Baccelliere, C., Zarate, J., Shea, H., Cocchi, E., Waszkielewicz, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Journal of Neuroengineering and Rehabilitation</p>
+        <p class="pub-year">2019</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span></div>
+        <a href="https://doi.org/10.1186/s12984-019-0580-2" target="_blank" class="pub-link">DOI: 10.1186/s12984-019-0580-2</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="The effect of symmetric and asymmetric directional binaural listening on speech understanding with surrounding cocktail party noise">
+      <div class="pub-header">
+        <h3>The effect of symmetric and asymmetric directional binaural listening on speech understanding with surrounding cocktail party noise</h3>
+        <p class="pub-meta">Giuliani, L., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">International Journal of Speech Technology</p>
+        <p class="pub-year">2019</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1007/s10772-019-09612-x" target="_blank" class="pub-link">DOI: 10.1007/s10772-019-09612-x</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Updated Tactile Feedback with a Pin Array Matrix Helps Blind People to Reduce Self-Location Errors">
+      <div class="pub-header">
+        <h3>Updated Tactile Feedback with a Pin Array Matrix Helps Blind People to Reduce Self-Location Errors</h3>
+        <p class="pub-meta">Luca Brayda, Fabrizio Leo, Caterina Baccelliere, Elisabetta Ferrari, Claudia Vigini</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Micromachines</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span></div>
+        <a href="https://doi.org/10.3390/mi9070351" target="_blank" class="pub-link">DOI: 10.3390/mi9070351</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Improving spatial working memory in blind and sighted youngsters using programmable tactile displays">
+      <div class="pub-header">
+        <h3>Improving spatial working memory in blind and sighted youngsters using programmable tactile displays</h3>
+        <p class="pub-meta">Leo, F., Tinti, C., Chiesa, S., Cavaglià, R., Schmidt, S., Cocchi, E., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Sage Open Medicine</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1177/2050312118820028" target="_blank" class="pub-link">DOI: 10.1177/2050312118820028</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Anti-Veering Vibrotactile HMD for Assistance of Blind Pedestrians">
+      <div class="pub-header">
+        <h3>Anti-Veering Vibrotactile HMD for Assistance of Blind Pedestrians</h3>
+        <p class="pub-meta">de Jesus Oliveira, V.A., Nedel, L., Maciel, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-93399-3_43" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-93399-3_43</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Tactile treasure map: Integrating allocentric and egocentric information for tactile guidance">
+      <div class="pub-header">
+        <h3>Tactile treasure map: Integrating allocentric and egocentric information for tactile guidance</h3>
+        <p class="pub-meta">Memeo, M., De Jesus Oliveira, V.A., Nedel, L., Maciel, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Electrical Engineering</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1007/978-981-10-4157-0_62" target="_blank" class="pub-link">DOI: 10.1007/978-981-10-4157-0_62</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="How body motion influences echolocation while walking">
+      <div class="pub-header">
+        <h3>How body motion influences echolocation while walking</h3>
+        <p class="pub-meta">Alessia Tonelli, Claudio Campus, Luca Brayda</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Scientific Reports</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1038/s41598-018-34074-7" target="_blank" class="pub-link">DOI: 10.1038/s41598-018-34074-7</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="The influence of tactile cognitive maps on auditory space perception in sighted persons">
+      <div class="pub-header">
+        <h3>The influence of tactile cognitive maps on auditory space perception in sighted persons</h3>
+        <p class="pub-meta">Tonelli, A., Gori, M., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Frontiers in Psychology</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.3389/fpsyg.2016.01683" target="_blank" class="pub-link">DOI: 10.3389/fpsyg.2016.01683</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Depth echolocation learnt by novice sighted people">
+      <div class="pub-header">
+        <h3>Depth echolocation learnt by novice sighted people</h3>
+        <p class="pub-meta">Tonelli, A., Brayda, L., Gori, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">PLoS ONE</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1371/journal.pone.0156654" target="_blank" class="pub-link">DOI: 10.1371/journal.pone.0156654</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Compensating cocktail party noise with binaural spatial segregation on a Novel device targeting partial hearing loss">
+      <div class="pub-header">
+        <h3>Compensating cocktail party noise with binaural spatial segregation on a Novel device targeting partial hearing loss</h3>
+        <p class="pub-meta">Giuliani, L., Sansalone, S., Repetto, S., Traverso, F., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-41267-2_54" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-41267-2_54</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="How geometrical descriptors help to build cognitive maps of solid geometry with a 3DOF tactile mouse">
+      <div class="pub-header">
+        <h3>How geometrical descriptors help to build cognitive maps of solid geometry with a 3DOF tactile mouse</h3>
+        <p class="pub-meta">Memeo, M., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-42324-1_8" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-42324-1_8</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Localized magnification in vibrotactile HMDs for accurate spatial awareness">
+      <div class="pub-header">
+        <h3>Localized magnification in vibrotactile HMDs for accurate spatial awareness</h3>
+        <p class="pub-meta">De Jesus Oliveira, V.A., Nedel, L., Maciel, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-42324-1_6" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-42324-1_6</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Mind the bump: Effect of geometrical descriptors on the perception of curved surfaces with a novel tactile mouse">
+      <div class="pub-header">
+        <h3>Mind the bump: Effect of geometrical descriptors on the perception of curved surfaces with a novel tactile mouse</h3>
+        <p class="pub-meta">Memeo, M., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-42324-1_43" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-42324-1_43</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Interactive spatial sonification for non-visual exploration of virtual maps">
+      <div class="pub-header">
+        <h3>Interactive spatial sonification for non-visual exploration of virtual maps</h3>
+        <p class="pub-meta">Geronazzo, M., Bedin, A., Brayda, L., Campus, C., Avanzini, F.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">International Journal of Human Computer Studies</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1016/j.ijhcs.2015.08.004" target="_blank" class="pub-link">DOI: 10.1016/j.ijhcs.2015.08.004</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Parylene coated carbon nanotube actuators for tactile stimulation">
+      <div class="pub-header">
+        <h3>Parylene coated carbon nanotube actuators for tactile stimulation</h3>
+        <p class="pub-meta">Grzegorz Bubak, Alberto Ansaldo, David Gendron, Luca Brayda, Luca Ceseracciu, Davide Ricci, Yoseph Bar-Cohen</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Electroactive Polymer Actuators and Devices (EAPAD) 2015</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1117/12.2084233" target="_blank" class="pub-link">DOI: 10.1117/12.2084233</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Task-dependent calibration of auditory spatial perception through environmental visual observation">
+      <div class="pub-header">
+        <h3>Task-dependent calibration of auditory spatial perception through environmental visual observation</h3>
+        <p class="pub-meta">Tonelli, A., Brayda, L., Gori, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Frontiers in Systems Neuroscience</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.3389/fnsys.2015.00084" target="_blank" class="pub-link">DOI: 10.3389/fnsys.2015.00084</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Do Blind Subjects Differ from Sighted Subjects When Exploring Virtual Tactile Maps?">
+      <div class="pub-header">
+        <h3>Do Blind Subjects Differ from Sighted Subjects When Exploring Virtual Tactile Maps?</h3>
+        <p class="pub-meta">Mariacarla Memeo, Claudio Campus, Luca Brayda</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Computers Helping People with Special Needs</p>
+        <p class="pub-year">2014</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1007/978-3-319-08599-9_3" target="_blank" class="pub-link">DOI: 10.1007/978-3-319-08599-9_3</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Similarity of Blind and Sighted Subjects When Constructing Maps with Small-Area Tactile Displays: Performance, Behavioral and Subjective Aspects">
+      <div class="pub-header">
+        <h3>Similarity of Blind and Sighted Subjects When Constructing Maps with Small-Area Tactile Displays: Performance, Behavioral and Subjective Aspects</h3>
+        <p class="pub-meta">Mariacarla Memeo, Claudio Campus, Laura Lucagrossi, Luca Brayda</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Haptics: Neuroscience, Devices, Modeling, and Applications</p>
+        <p class="pub-year">2014</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span></div>
+        <a href="https://doi.org/10.1007/978-3-662-44193-0_37" target="_blank" class="pub-link">DOI: 10.1007/978-3-662-44193-0_37</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="What you touch is what you get: Self-assessing a minimalist tactile sensory substitution device">
+      <div class="pub-header">
+        <h3>What you touch is what you get: Self-assessing a minimalist tactile sensory substitution device</h3>
+        <p class="pub-meta">Brayda, L., Campus, C., Gori, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">2013 World Haptics Conference, WHC 2013</p>
+        <p class="pub-year">2013</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1109/WHC.2013.6548457" target="_blank" class="pub-link">DOI: 10.1109/WHC.2013.6548457</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Measuring Human-Robots Interactions">
+      <div class="pub-header">
+        <h3>Measuring Human-Robots Interactions</h3>
+        <p class="pub-meta">Brayda, L., Chellali, R.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">International Journal of Social Robotics</p>
+        <p class="pub-year">2012</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://doi.org/10.1007/s12369-012-0150-2" target="_blank" class="pub-link">DOI: 10.1007/s12369-012-0150-2</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Tactile exploration of virtual objects for blind and sighted people: The role of beta 1 EEG band in sensory substitution and supramodal mental mapping">
+      <div class="pub-header">
+        <h3>Tactile exploration of virtual objects for blind and sighted people: The role of beta 1 EEG band in sensory substitution and supramodal mental mapping</h3>
+        <p class="pub-meta">Campus, C., Brayda, L., de Carli, F., Chellali, R., Famà, F., Bruzzo, C., Lucagrossi, L., Rodriguez, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Journal of Neurophysiology</p>
+        <p class="pub-year">2012</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1152/jn.00624.2011" target="_blank" class="pub-link">DOI: 10.1152/jn.00624.2011</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Objective evaluation of spatial information acquisition using a visuo-tactile sensory substitution device">
+      <div class="pub-header">
+        <h3>Objective evaluation of spatial information acquisition using a visuo-tactile sensory substitution device</h3>
+        <p class="pub-meta">Brayda, L., Campus, C., Chellali, R., Rodriguez, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2010</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1007/978-3-642-17248-9_33" target="_blank" class="pub-link">DOI: 10.1007/978-3-642-17248-9_33</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Quantitative and qualitative evaluation of vision-based teleoperation of a mobile robot">
+      <div class="pub-header">
+        <h3>Quantitative and qualitative evaluation of vision-based teleoperation of a mobile robot</h3>
+        <p class="pub-meta">Brayda, L., Ortiz, J., Mollet, N., Chellali, R., Fontaine, J.-G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2009</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://doi.org/10.1007/978-3-642-10817-4_78" target="_blank" class="pub-link">DOI: 10.1007/978-3-642-10817-4_78</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Mixing telerobotics and virtual reality for improving immersion in artwork perception">
+      <div class="pub-header">
+        <h3>Mixing telerobotics and virtual reality for improving immersion in artwork perception</h3>
+        <p class="pub-meta">Brayda, L., Mollet, N., Chellali, R.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2009</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1007/978-3-642-03364-3_8" target="_blank" class="pub-link">DOI: 10.1007/978-3-642-03364-3_8</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="N-best parallel maximum likelihood beamformers for robust speech recognition">
+      <div class="pub-header">
+        <h3>N-best parallel maximum likelihood beamformers for robust speech recognition</h3>
+        <p class="pub-meta">Brayda, L., Wellekens, C., M. Omologo, C.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">European Signal Processing Conference</p>
+        <p class="pub-year">2006</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        
+      </div>
+    </div>
+      </div>
+    </section>
+
+    <!-- Book Chapters -->
+    <section class="section chapters-section visible" data-section="chapters">
+      <div class="section-header chapters">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20M4 4.5v13a2.5 2.5 0 0 0 2.5 2.5H20"/>
+          <path d="M7 7h.01M7 12h.01"/>
+        </svg>
+        <h2>Book Chapters</h2>
+        <div class="pub-count"><span class="count">3</span> chapters</div>
+      </div>
+      <div class="publications-list">
+    <div class="publication-item" data-title="Maps as ability amplifiers: Using graphical tactile displays to enhance spatial skills in people who are visually impaired">
+      <div class="pub-header">
+        <h3>Maps as ability amplifiers: Using graphical tactile displays to enhance spatial skills in people who are visually impaired</h3>
+        <p class="pub-meta">Leo, F., Cocchi, E., Ferrari, E., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Haptic Interfaces for Accessibility Health and Enhanced Quality of Life</p>
+        <p class="pub-year">2019</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span></div>
+        <a href="https://doi.org/10.1007/978-3-030-34230-2_3" target="_blank" class="pub-link">DOI: 10.1007/978-3-030-34230-2_3</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Designing audio-visual tools to support multisensory disabilities">
+      <div class="pub-header">
+        <h3>Designing audio-visual tools to support multisensory disabilities</h3>
+        <p class="pub-meta">Noceti, N., Giuliani, L., Sosa-Garciá, J., Brayda, L., Trucco, A., Odone, F.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Multimodal Behavior Analysis in the Wild Advances and Challenges</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.1016/B978-0-12-814601-9.00013-4" target="_blank" class="pub-link">DOI: 10.1016/B978-0-12-814601-9.00013-4</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Virtual and augmented reality tools for teleoperation: Improving distant immersion and perception">
+      <div class="pub-header">
+        <h3>Virtual and augmented reality tools for teleoperation: Improving distant immersion and perception</h3>
+        <p class="pub-meta">Mollet, N., Chellali, R., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Lecture Notes in Computer Science Including Subseries Lecture Notes in Artificial Intelligence and Lecture Notes in Bioinformatics</p>
+        <p class="pub-year">2009</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1007/978-3-642-03270-7_10" target="_blank" class="pub-link">DOI: 10.1007/978-3-642-03270-7_10</a>
+      </div>
+    </div>
+      </div>
+    </section>
+
+    <!-- Conference & Workshop Papers -->
+    <section class="section conferences-section visible" data-section="conferences">
+      <div class="section-header conferences">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2M9 7a4 4 0 1 0 0-8 4 4 0 0 0 0 8ZM23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
+        <h2>Conferences & Workshops</h2>
+        <div class="pub-count"><span class="count">31</span> papers</div>
+      </div>
+      <div class="publications-list">
+    <div class="publication-item" data-title="Live Wire - A Low-Complexity Body Channel Communication System for Landmark Identification">
+      <div class="pub-header">
+        <h3>Live Wire - A Low-Complexity Body Channel Communication System for Landmark Identification</h3>
+        <p class="pub-meta">Crepaldi, M., Barcellona, A., Zini, G., Ansaldo, A., Ros, P.M., Sanginario, A., Cuccu, C., Demarchi, D., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Emerging Topics in Computing</p>
+        <p class="pub-year">2021</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1109/TETC.2020.2996280" target="_blank" class="pub-link">DOI: 10.1109/TETC.2020.2996280</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="A refreshable tactile display effectively supports cognitive mapping followed by orientation and mobility tasks: A comparative multi-modal study involving blind and low-vision participants">
+      <div class="pub-header">
+        <h3>A refreshable tactile display effectively supports cognitive mapping followed by orientation and mobility tasks: A comparative multi-modal study involving blind and low-vision participants</h3>
+        <p class="pub-meta">Brayda, L., Leo, F., Baccelliere, C., Vigini, C., Cocchi, E.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Mahci 2019 Proceedings of the 2nd Workshop on Multimedia for Accessible Human Computer Interfaces Co Located with mm 2019</p>
+        <p class="pub-year">2019</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span></div>
+        <a href="https://doi.org/10.1145/3347319.3356840" target="_blank" class="pub-link">DOI: 10.1145/3347319.3356840</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Tactile symbol discrimination on a small pin-array display">
+      <div class="pub-header">
+        <h3>Tactile symbol discrimination on a small pin-array display</h3>
+        <p class="pub-meta">Leo, F., Baccelliere, C., Waszkielewicz, A., Cocchi, E., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Mahci 2018 Proceedings of the 2018 Workshop on Multimedia for Accessible Human Computer Interface Co Located with mm 2018</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span></div>
+        <a href="https://doi.org/10.1145/3264856.3264858" target="_blank" class="pub-link">DOI: 10.1145/3264856.3264858</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Understanding Graphics on a Scalable Latching Assistive Haptic Display Using a Shape Memory Polymer Membrane">
+      <div class="pub-header">
+        <h3>Understanding Graphics on a Scalable Latching Assistive Haptic Display Using a Shape Memory Polymer Membrane</h3>
+        <p class="pub-meta">Nadine Besse, Samuel Rosset, Juan Jose Zarate, Elisabetta Ferrari, Luca Brayda, Herbert Shea</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Haptics</p>
+        <p class="pub-year">2018</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1109/TOH.2017.2767049" target="_blank" class="pub-link">DOI: 10.1109/TOH.2017.2767049</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="The Effect of Programmable Tactile Displays on Spatial Learning Skills in Children and Adolescents of Different Visual Disability">
+      <div class="pub-header">
+        <h3>The Effect of Programmable Tactile Displays on Spatial Learning Skills in Children and Adolescents of Different Visual Disability</h3>
+        <p class="pub-meta">Leo, F., Cocchi, E., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Neural Systems and Rehabilitation Engineering</p>
+        <p class="pub-year">2017</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1109/TNSRE.2016.2619742" target="_blank" class="pub-link">DOI: 10.1109/TNSRE.2016.2619742</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Designing a Vibrotactile Head-Mounted Display for Spatial Awareness in 3D Spaces">
+      <div class="pub-header">
+        <h3>Designing a Vibrotactile Head-Mounted Display for Spatial Awareness in 3D Spaces</h3>
+        <p class="pub-meta">De Jesus Oliveira, V.A., Brayda, L., Nedel, L., Maciel, A.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Visualization and Computer Graphics</p>
+        <p class="pub-year">2017</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/TVCG.2017.2657238" target="_blank" class="pub-link">DOI: 10.1109/TVCG.2017.2657238</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Experiencing guidance in 3D spaces with a vibrotactile head-mounted display">
+      <div class="pub-header">
+        <h3>Experiencing guidance in 3D spaces with a vibrotactile head-mounted display</h3>
+        <p class="pub-meta">De Jesus Oliveira, V.A., Brayda, L., Nedel, L., Maciel, A.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings - IEEE Virtual Reality</p>
+        <p class="pub-year">2017</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/VR.2017.7892375" target="_blank" class="pub-link">DOI: 10.1109/VR.2017.7892375</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Evaluation of a complementary hearing aid for spatial sound segregation">
+      <div class="pub-header">
+        <h3>Evaluation of a complementary hearing aid for spatial sound segregation</h3>
+        <p class="pub-meta">Giuliani, L., Brayda, L., Sansalone, S., Repetto, S., Ricchetti, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">ICASSP, IEEE International Conference on Acoustics, Speech and Signal Processing - Proceedings</p>
+        <p class="pub-year">2017</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1109/ICASSP.2017.7952150" target="_blank" class="pub-link">DOI: 10.1109/ICASSP.2017.7952150</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Live wire: Body channel communication as a high impedance and frequency-scaled impulse radio">
+      <div class="pub-header">
+        <h3>Live wire: Body channel communication as a high impedance and frequency-scaled impulse radio</h3>
+        <p class="pub-meta">Crepaldi, M., Zini, G., Maviglia, A., Barcellona, A., Merello, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">2017 IEEE Biomedical Circuits and Systems Conference Biocas 2017 Proceedings</p>
+        <p class="pub-year">2017</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1109/BIOCAS.2017.8325546" target="_blank" class="pub-link">DOI: 10.1109/BIOCAS.2017.8325546</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Spatial discrimination of vibrotactile stimuli around the head">
+      <div class="pub-header">
+        <h3>Spatial discrimination of vibrotactile stimuli around the head</h3>
+        <p class="pub-meta">De Jesus Oliveira, V.A., Nedel, L., Maciel, A., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Haptics Symposium, HAPTICS</p>
+        <p class="pub-year">2016</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1109/HAPTICS.2016.7463147" target="_blank" class="pub-link">DOI: 10.1109/HAPTICS.2016.7463147</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Workshop: MUL tisensory interaction and abistive technology: Feasibility and effectiveneb (MULTI-AT)">
+      <div class="pub-header">
+        <h3>Workshop: MUL tisensory interaction and abistive technology: Feasibility and effectiveneb (MULTI-AT)</h3>
+        <p class="pub-meta">Brayda, L., Serino, A., Wilhelm, E., Macé, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings of the 2015 ACM International Conference on Interactive Tabletops and Surfaces, ITS 2015</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span></div>
+        <a href="https://doi.org/10.1145/2817721.2835069" target="_blank" class="pub-link">DOI: 10.1145/2817721.2835069</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Spatially selective binaural hearing AIDS">
+      <div class="pub-header">
+        <h3>Spatially selective binaural hearing AIDS</h3>
+        <p class="pub-meta">Brayda, L., Traverso, F., Giuliani, L., Diotalevi, F., Repetto, S., Sansalone, S., Trucco, A., Sandini, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">UbiComp and ISWC 2015 - Proceedings of the 2015 ACM International Joint Conference on Pervasive and Ubiquitous Computing and the Proceedings of the 2015 ACM International Symposium on Wearable Computers</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        <a href="https://doi.org/10.1145/2800835.2806207" target="_blank" class="pub-link">DOI: 10.1145/2800835.2806207</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Saliency based sensor fusion of broadband sound localizer for humanoids">
+      <div class="pub-header">
+        <h3>Saliency based sensor fusion of broadband sound localizer for humanoids</h3>
+        <p class="pub-meta">Mosadeghzad, M., Rea, F., Tata, M.S., Brayda, L., Sandini, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE International Conference on Multisensor Fusion and Integration for Intelligent Systems</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.1109/MFI.2015.7295835" target="_blank" class="pub-link">DOI: 10.1109/MFI.2015.7295835</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="The Importance of Visual Experience, Gender, and Emotion in the Assessment of an Assistive Tactile Mouse">
+      <div class="pub-header">
+        <h3>The Importance of Visual Experience, Gender, and Emotion in the Assessment of an Assistive Tactile Mouse</h3>
+        <p class="pub-meta">Brayda, L., Campus, C., Memeo, M., Lucagrossi, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Haptics</p>
+        <p class="pub-year">2015</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1109/TOH.2015.2426692" target="_blank" class="pub-link">DOI: 10.1109/TOH.2015.2426692</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Multimodal exploration of virtual objects with a spatialized anchor sound">
+      <div class="pub-header">
+        <h3>Multimodal exploration of virtual objects with a spatialized anchor sound</h3>
+        <p class="pub-meta">Geronazzo, M., Bedin, A., Brayda, L., Avanzini, F.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings of the AES International Conference</p>
+        <p class="pub-year">2014</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        
+      </div>
+    </div>
+    <div class="publication-item" data-title="Study of static tactile detection threshold via pneumatically driven polydimethylsiloxane membrane">
+      <div class="pub-header">
+        <h3>Study of static tactile detection threshold via pneumatically driven polydimethylsiloxane membrane</h3>
+        <p class="pub-meta">Kunchornsup, W., Leo, F., Bertora, F., Fragouli, D., Petroni, S., Brayda, L.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">CEUR Workshop Proceedings</p>
+        <p class="pub-year">2014</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        
+      </div>
+    </div>
+    <div class="publication-item" data-title="Predicting successful tactile mapping of virtual objects">
+      <div class="pub-header">
+        <h3>Predicting successful tactile mapping of virtual objects</h3>
+        <p class="pub-meta">Brayda, L., Campus, C., Gori, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Transactions on Haptics</p>
+        <p class="pub-year">2013</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/TOH.2013.49" target="_blank" class="pub-link">DOI: 10.1109/TOH.2013.49</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Predicting Successful Tactile Mapping of Virtual Objects">
+      <div class="pub-header">
+        <h3>Predicting Successful Tactile Mapping of Virtual Objects</h3>
+        <p class="pub-meta">Luca Brayda, Claudio Campus, Monica Gori</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">IEEE Trans. Haptics</p>
+        <p class="pub-year">2013</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/toh.2013.49" target="_blank" class="pub-link">DOI: 10.1109/toh.2013.49</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Conveying perceptible virtual tactile maps with a minimalist sensory substitution device">
+      <div class="pub-header">
+        <h3>Conveying perceptible virtual tactile maps with a minimalist sensory substitution device</h3>
+        <p class="pub-meta">Brayda, L., Campus, C.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings - 2012 IEEE Symposium on Haptic Audio-Visual Environments and Games, HAVE 2012</p>
+        <p class="pub-year">2012</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/HAVE.2012.6374440" target="_blank" class="pub-link">DOI: 10.1109/HAVE.2012.6374440</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Distributed feature based RBPF multi robot SLAM">
+      <div class="pub-header">
+        <h3>Distributed feature based RBPF multi robot SLAM</h3>
+        <p class="pub-meta">Un Nabi Jafri, S.R., Brayda, L., Chellali, R.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">2011 IEEE International Conference on Robotics and Biomimetics, ROBIO 2011</p>
+        <p class="pub-year">2011</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span></div>
+        <a href="https://doi.org/10.1109/ROBIO.2011.6181429" target="_blank" class="pub-link">DOI: 10.1109/ROBIO.2011.6181429</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="A neurophysiological and behavioral investigation of tactile spatial exploration for sighted and non-sighted adults">
+      <div class="pub-header">
+        <h3>A neurophysiological and behavioral investigation of tactile spatial exploration for sighted and non-sighted adults</h3>
+        <p class="pub-meta">Campus, C., Brayda, L., Chellali, R., Martinoli, C., Rodriguez, G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings of the Human Factors and Ergonomics Society</p>
+        <p class="pub-year">2011</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span></div>
+        <a href="https://doi.org/10.1177/1071181311551047" target="_blank" class="pub-link">DOI: 10.1177/1071181311551047</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="An investigation of search behaviour in a tactile exploration task for sighted and non-sighted adults">
+      <div class="pub-header">
+        <h3>An investigation of search behaviour in a tactile exploration task for sighted and non-sighted adults</h3>
+        <p class="pub-meta">Brayda, L., Rodriguez, G., Campus, C., Martinoli, C., Chellali, R.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Conference on Human Factors in Computing Systems - Proceedings</p>
+        <p class="pub-year">2011</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Haptics & Tactile" style="background-color: #FF6B6B;">Haptics & Tactile</span></div>
+        <a href="https://doi.org/10.1145/1979742.1979857" target="_blank" class="pub-link">DOI: 10.1145/1979742.1979857</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Seeking perceptual-based metrics to assess the visuo-motor loop in mobile robot teleoperation">
+      <div class="pub-header">
+        <h3>Seeking perceptual-based metrics to assess the visuo-motor loop in mobile robot teleoperation</h3>
+        <p class="pub-meta">Brayda, L., Ortiz, J., Chellali, R., Mollet, N., Fontaine, J.-G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">2010 IEEE Conference on Robotics, Automation and Mechatronics, RAM 2010</p>
+        <p class="pub-year">2010</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://doi.org/10.1109/RAMECH.2010.5513220" target="_blank" class="pub-link">DOI: 10.1109/RAMECH.2010.5513220</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Virtual environments and scenario languages for advanced teleoperation of groups of real robots: Real case application">
+      <div class="pub-header">
+        <h3>Virtual environments and scenario languages for advanced teleoperation of groups of real robots: Real case application</h3>
+        <p class="pub-meta">Mollet, N., Brayda, L.G., Chellali, R., Fontaine, J.-G.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings of the 2nd International Conferences on Advances in Computer-Human Interactions, ACHI 2009</p>
+        <p class="pub-year">2009</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Human-Computer Interaction" style="background-color: #E67E22;">Human-Computer Interaction</span><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/ACHI.2009.42" target="_blank" class="pub-link">DOI: 10.1109/ACHI.2009.42</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="How taxel-based displaying devices can help visually impaired people to navigate safely">
+      <div class="pub-header">
+        <h3>How taxel-based displaying devices can help visually impaired people to navigate safely</h3>
+        <p class="pub-meta">Chellali, R., Brayda, L., Martinoli, C., Fontaine, E.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">ICARA 2009 - Proceedings of the 4th International Conference on Autonomous Robots and Agents</p>
+        <p class="pub-year">2009</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://doi.org/10.1109/ICARA.2000.4804012" target="_blank" class="pub-link">DOI: 10.1109/ICARA.2000.4804012</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Standardization and integration in robotics: Case of virtual reality tools">
+      <div class="pub-header">
+        <h3>Standardization and integration in robotics: Case of virtual reality tools</h3>
+        <p class="pub-meta">Mollet, N., Khelifa, B., Brayda, L.G., Chellali, R.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Proceedings of the 2008 International Conference on Cyberworlds, CW 2008</p>
+        <p class="pub-year">2008</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.1109/CW.2008.106" target="_blank" class="pub-link">DOI: 10.1109/CW.2008.106</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Speech recognition in reverberant environments using remote microphones">
+      <div class="pub-header">
+        <h3>Speech recognition in reverberant environments using remote microphones</h3>
+        <p class="pub-meta">Brayda, L., Wellekens, C., Matassoni, M., Omologo, M.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">ISM 2006 - 8th IEEE International Symposium on Multimedia</p>
+        <p class="pub-year">2006</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.1109/ISM.2006.141" target="_blank" class="pub-link">DOI: 10.1109/ISM.2006.141</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Speech Recognition in Reverberant Environments Using Remote Microphones">
+      <div class="pub-header">
+        <h3>Speech Recognition in Reverberant Environments Using Remote Microphones</h3>
+        <p class="pub-meta">Luca Brayda, Christian Wellekens, Marco Matassoni, Maurizio Omologo</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Eighth IEEE International Symposium on Multimedia (ISM'06)</p>
+        <p class="pub-year">2006</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        <a href="https://doi.org/10.1109/ism.2006.141" target="_blank" class="pub-link">DOI: 10.1109/ism.2006.141</a>
+      </div>
+    </div>
+    <div class="publication-item" data-title="Modifications on NIST MarkIII array to improve coherence properties among input signals">
+      <div class="pub-header">
+        <h3>Modifications on NIST MarkIII array to improve coherence properties among input signals</h3>
+        <p class="pub-meta">Brayda, L., Bertotti, C., Cristoforetti, L., Omologo, M., Svaizer, P.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">Audio Engineering Society - 118th Convention Spring Preprints 2005</p>
+        <p class="pub-year">2005</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span></div>
+        
+      </div>
+    </div>
+    <div class="publication-item" data-title="Sensitivity analysis of noise robustness methods">
+      <div class="pub-header">
+        <h3>Sensitivity analysis of noise robustness methods</h3>
+        <p class="pub-meta">Brayda, L., Rigazio, L., Boman, R., Junqua, J.-C.</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">ICASSP, IEEE International Conference on Acoustics, Speech and Signal Processing - Proceedings</p>
+        <p class="pub-year">2004</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Brain & Neuroscience" style="background-color: #E74C3C;">Brain & Neuroscience</span><span class="keyword-tag" data-keyword="Signal Processing" style="background-color: #3498DB;">Signal Processing</span><span class="keyword-tag" data-keyword="Speech & Audio" style="background-color: #F39C12;">Speech & Audio</span><span class="keyword-tag" data-keyword="Super Sensing" style="background-color: #FF1493;">Super Sensing</span></div>
+        
+      </div>
+    </div>
+    <div class="publication-item" data-title="How taxel-based displaying devices can help visually impaired people to navigate safely">
+      <div class="pub-header">
+        <h3>How taxel-based displaying devices can help visually impaired people to navigate safely</h3>
+        <p class="pub-meta">Ryad Chellali, Luca Brayda, Cristina Martinoli, Eleanore Fontaine</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">2009 4th International Conference on Autonomous Robots and Agents</p>
+        <p class="pub-year">2000</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Robotics & Teleoperation" style="background-color: #27AE60;">Robotics & Teleoperation</span></div>
+        <a href="https://doi.org/10.1109/icara.2000.4804012" target="_blank" class="pub-link">DOI: 10.1109/icara.2000.4804012</a>
+      </div>
+    </div>
+      </div>
+    </section>
+
+    <!-- Datasets -->
+    <section class="section datasets-section visible" data-section="datasets">
+      <div class="section-header datasets">
+        <svg class="section-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path d="M12 2L2 7L2 17C2 19.76 6.48 22 12 22C17.52 22 22 19.76 22 17V7L12 2Z"/>
+          <path d="M12 12.5V22M7 9L17 9"/>
+        </svg>
+        <h2>Datasets</h2>
+        <div class="pub-count"><span class="count">1</span> datasets</div>
+      </div>
+      <div class="publications-list">
+    <div class="publication-item" data-title="analyses_obj_puzzle.xls dataset">
+      <div class="pub-header">
+        <h3>analyses_obj_puzzle.xls dataset</h3>
+        <p class="pub-meta">Luca Brayda, Memeo, G Sandini, Elena Cocchi</p>
+      </div>
+      <div class="pub-details">
+        <p class="pub-venue">data-set</p>
+        <p class="pub-year">2023</p>
+        
+        <div class="keyword-container"><span class="keyword-tag" data-keyword="Assistive Technology" style="background-color: #16A085;">Assistive Technology</span><span class="keyword-tag" data-keyword="Cognitive Mapping" style="background-color: #4ECDC4;">Cognitive Mapping</span><span class="keyword-tag" data-keyword="Virtual Reality & 3D" style="background-color: #9B59B6;">Virtual Reality & 3D</span></div>
+        <a href="https://doi.org/10.6084/m9.figshare.24428407" target="_blank" class="pub-link">DOI: 10.6084/m9.figshare.24428407</a>
+      </div>
+    </div>
+      </div>
+    </section>
+
+    <footer>
+      <p>Last updated: April 2026 | Data from ORCID, CV & Google Scholar</p>
+    </footer>
+  </div>
+
+  <script>
+    let activeKeywords = new Set();
+
+    // Add click handlers to keyword filter buttons
+    document.querySelectorAll('.keyword-filter-btn:not(.clear)').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const keyword = this.dataset.keyword;
+        
+        if (activeKeywords.has(keyword)) {
+          activeKeywords.delete(keyword);
+          this.classList.remove('active');
+        } else {
+          activeKeywords.add(keyword);
+          this.classList.add('active');
+        }
+        
+        applyFilters();
+      });
+    });
+
+    // Add click handlers to keyword tags
+    document.querySelectorAll('.keyword-tag').forEach(tag => {
+      tag.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const keyword = this.dataset.keyword;
+        
+        if (activeKeywords.has(keyword)) {
+          activeKeywords.delete(keyword);
+        } else {
+          activeKeywords.add(keyword);
+        }
+        
+        // Update button states
+        document.querySelectorAll('.keyword-filter-btn').forEach(btn => {
+          if (btn.dataset.keyword === keyword) {
+            btn.classList.toggle('active');
+          }
+        });
+        
+        applyFilters();
+      });
+    });
+
+    function applyFilters() {
+      if (activeKeywords.size === 0) {
+        // Show all
+        document.querySelectorAll('.publication-item').forEach(item => {
+          item.classList.remove('hidden');
+        });
+        
+        document.querySelectorAll('.section').forEach(section => {
+          section.classList.add('visible');
+          const total = section.querySelectorAll('.publication-item').length;
+          section.querySelector('.pub-count .count').textContent = total;
+        });
+        
+        document.getElementById('filter-status').classList.remove('visible');
+      } else {
+        // Filter by keywords
+        const keywordArray = Array.from(activeKeywords);
+        
+        document.querySelectorAll('.publication-item').forEach(item => {
+          const keywords = Array.from(item.querySelectorAll('.keyword-tag')).map(tag => tag.dataset.keyword);
+          const hasKeyword = keywordArray.some(kw => keywords.includes(kw));
+          
+          if (hasKeyword) {
+            item.classList.remove('hidden');
+          } else {
+            item.classList.add('hidden');
+          }
+        });
+
+        // Update section visibility and counts
+        document.querySelectorAll('.section').forEach(section => {
+          const visibleItems = section.querySelectorAll('.publication-item:not(.hidden)');
+          const count = visibleItems.length;
+          
+          section.querySelector('.pub-count .count').textContent = count;
+          
+          if (count === 0) {
+            section.classList.remove('visible');
+          } else {
+            section.classList.add('visible');
+          }
+        });
+
+        // Update status
+        const statusText = keywordArray.length === 1 
+          ? `Showing papers with: <strong>${keywordArray[0]}</strong>`
+          : `Showing papers with: <strong>${keywordArray.join(', ')}</strong>`;
+        document.getElementById('filter-status').innerHTML = statusText;
+        document.getElementById('filter-status').classList.add('visible');
+      }
+    }
+
+    function clearFilters() {
+      activeKeywords.clear();
+      
+      document.querySelectorAll('.keyword-filter-btn').forEach(btn => {
+        btn.classList.remove('active');
+      });
+      
+      applyFilters();
+    }
+  </script>
+</body>
+</html>
